@@ -73,6 +73,7 @@ class Dataset(object):
 def convert(d):
     print "Processing all images in dataset... "
     dict = OrderedDict()
+    dict2 = OrderedDict()
     for key in d:
         value = d[key]
         min_dist = dist_cal(key, value[0])
@@ -83,10 +84,14 @@ def convert(d):
                 query = str(key)
                 min_dist = dist
                 min_y = str(element).rstrip(".jpg")
+        print "Processing query: " + (query) + " <=> Most similar image is: " + (min_y) + " <=> Distance is: " + str(min_dist)
         dict[query] = min_y
+        dict2[query] = str(min_dist)
     # print dict
     print "Dataset processing finished... "
     savepair(dict)
+    savedist(dict2)
+    print "Dataset successfully created. "
 
 def savepair(self):
     print "Saving minimum query, reference pairs... "
@@ -97,9 +102,18 @@ def savepair(self):
         file.write(v)
         file.write("\n")
     file.close()
-    print "Done..."
+    print "Saved..."
 
-
+def savedist(self):
+    print "Saving the distance of queries... "
+    file = open('/home/peth/Databases/rPascal/dist_pair.txt', 'w')
+    for k, v in self.items():
+        file.write(k)
+        file.write(' ')
+        file.write(v)
+        file.write("\n")
+    file.close()
+    print "Saved.."
      #   print "min_dist_of_key: " + query + " <> " + min_y + " => dist: " + str(min_dist)
     # for e1 in k.keys():
     #     min_dist = 10000

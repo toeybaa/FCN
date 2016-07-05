@@ -13,9 +13,9 @@ def vispair(x1, x2):
         fig.add_subplot(1, 2, n)  # horizontal ori
         plt.imshow(img)
         plt.axis("off")
-        plt.title('Most Similar image'+"\n")
+        plt.title('Most Similar Image'+"\n")
 
-    plt.title('Input image'+"\n")
+    plt.title('Input Image'+"\n")
     plt.show()
 
 
