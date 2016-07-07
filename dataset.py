@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import scipy.io as sio
+import math
+import operator
 from collections import defaultdict, OrderedDict
 
 RPASCAL_DIR = "/home/peth/Databases/rPascal"
@@ -69,7 +71,54 @@ class Dataset(object):
             for j in range(len(correspondence)):
                 self.annotations[name][correspondence[j].rstrip(IM_EXT)] = ann_lables[i][0][j][0]
         convert(r)
+        labeld = self.annotations
+    #    anconvert(r, labeld)
 
+# Write the file of all reference images based on the user string keyboard input of the query
+def anconvert(d, l):
+    input = raw_input("Enter Query Image: ")
+    path = '/home/peth/Databases/rPascal/features/caffe/queries/'
+    finput = input + '.npy'
+    check = True
+    for fname in sorted(os.listdir(path)):
+        if finput == fname and check:
+            check = False
+            file = open("/home/peth/Databases/rPascal/features/nDCG/" + input + ".txt", 'w')
+            for key in d:
+                # print key
+                if input == key:
+                    value = d[key]
+                    for element in value:
+                        dist = str(dist_cal(key, element))
+                        ref = str(element).rstrip(".jpg")
+                        file.write(ref)
+                        file.write(" ")
+                        file.write(dist)
+                        file.write("\n")
+            file.close()
+            print 'All reference and distance of ' + str(input) + " is written"
+            tosort(input, l)
+    if check:
+        print "Query Image not found.."
+
+# Sort the distance (in ascending order) based on the previous input by the user
+def tosort(path, l):
+    adict = OrderedDict()
+    with open("/home/peth/Databases/rPascal/features/nDCG/" + path + ".txt") as file:
+        data = file.readlines()
+        for line in data:
+            word = line.split()
+            adict[word[0]] = float(word[1])
+        sdict = OrderedDict(sorted(adict.items(), key = operator.itemgetter(1)))
+    list = []
+    for key in sdict:
+        e = (l[path][key])
+    #    print key, '........', sdict[key], e
+        list.append(e)
+    #    main(list)
+    reallist(list)
+
+#Calculate/Find the most similar pair of each of all queries
 def convert(d):
     print "Processing all images in dataset... "
     dict = OrderedDict()
@@ -93,6 +142,7 @@ def convert(d):
     savedist(dict2)
     print "Dataset successfully created. "
 
+#Save the pair of query and minimum distance reference (Most similar image)
 def savepair(self):
     print "Saving minimum query, reference pairs... "
     file = open("/home/peth/Databases/rPascal/most_similar_pair.txt", 'w')
@@ -104,6 +154,7 @@ def savepair(self):
     file.close()
     print "Saved..."
 
+#Save the pair of query and the value of minimum distance of its pair
 def savedist(self):
     print "Saving the distance of queries... "
     file = open('/home/peth/Databases/rPascal/dist_pair.txt', 'w')
@@ -132,6 +183,7 @@ def savedist(self):
     #
     #             # print count
 
+# Distance calculation method, return distance in float datatype
 def dist_cal(path1, path2):
     path2 = path2.rstrip(".jpg")
     path1 = "/home/peth/Databases/rPascal/features/caffe/queries/" + path1 + ".npy"
@@ -144,7 +196,7 @@ def dist_cal(path1, path2):
     return dist
     # # print (str("d2: ")+ str(dist2)) # the same value
 
-
+#Draw the example of 4 images in the format of query and label (0, 1, 2, 3)
 def visualize_dataset(dset):
     fig = plt.figure()
     plt.axis("off")
@@ -160,10 +212,29 @@ def visualize_dataset(dset):
     plt.show()
     plt.savefig("good.png")
 
-def main():
-    # Dataset dset = Dataset.getInstance(RPASCAL_DIR)
-    dset = Dataset(RPASCAL_DIR)
+#List creation for nDCG calculation, printing also
+def reallist(list):
+    real = list
+    gt = sorted(real, reverse=True)
+    k = len(real)
+    print "nDCG value is", dcg(real, k=k) / dcg(gt, k=k)
 
+#nDCG calculation method
+def dcg(rank_list, k=None):
+    if k is None:
+        k = len(rank_list)
+    sum = 0
+    for i, rank in enumerate(rank_list):
+        if k <= i:
+            break
+        # there is something wrong with nDCG in the paper
+        # https://crowdsolving.jp/node/1435
+        sum += (math.pow(2, rank) - 1) / math.log(i + 2, 2)
+    return sum
+
+def main():
+    dset = Dataset(RPASCAL_DIR)
+    # Dataset dset = Dataset.getInstance(RPASCAL_DIR)
     # visualize_dataset(dset)
     # dset = Dataset.__new__(cls, ****)
     # dset.__init__(RPASCAL_DIR)

@@ -1,12 +1,12 @@
 import sys, os
-from drawtest import vispair
+from draw_result import vispair
 
 def pair():
     a = sorted(os.listdir('/home/peth/Databases/rPascal/features/caffe/queries/'))
     for i in xrange(0,len(a)):
         print a[i].rstrip(".npy")
 
-    print 'Choose a query image rom above files...'
+    print 'Choose a query image from above files...'
     path = raw_input("Query Image? : ")
     with open("/home/peth/Databases/rPascal/most_similar_pair.txt") as file:
         checker = False
