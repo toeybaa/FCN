@@ -168,6 +168,8 @@ def savedist(self):
         file.write("\n")
     file.close()
     print "Saved.."
+
+    # Arjun's Implementation
      #   print "min_dist_of_key: " + query + " <> " + min_y + " => dist: " + str(min_dist)
     # for e1 in k.keys():
     #     min_dist = 10000

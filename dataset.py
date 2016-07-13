@@ -70,53 +70,7 @@ class Dataset(object):
             assert len(correspondence) == ann_lables[i][0].shape[0]
             for j in range(len(correspondence)):
                 self.annotations[name][correspondence[j].rstrip(IM_EXT)] = ann_lables[i][0][j][0]
-        convert(r)
-        labeld = self.annotations
-    #    anconvert(r, labeld)
-
-# Write the file of all reference images based on the user string keyboard input of the query
-def anconvert(d, l):
-    input = raw_input("Enter Query Image: ")
-    path = '/home/peth/Databases/rPascal/features/caffe/queries/'
-    finput = input + '.npy'
-    check = True
-    for fname in sorted(os.listdir(path)):
-        if finput == fname and check:
-            check = False
-            file = open("/home/peth/Databases/rPascal/features/nDCG/" + input + ".txt", 'w')
-            for key in d:
-                # print key
-                if input == key:
-                    value = d[key]
-                    for element in value:
-                        dist = str(dist_cal(key, element))
-                        ref = str(element).rstrip(".jpg")
-                        file.write(ref)
-                        file.write(" ")
-                        file.write(dist)
-                        file.write("\n")
-            file.close()
-            print 'All reference and distance of ' + str(input) + " is written"
-            tosort(input, l)
-    if check:
-        print "Query Image not found.."
-
-# Sort the distance (in ascending order) based on the previous input by the user
-def tosort(path, l):
-    adict = OrderedDict()
-    with open("/home/peth/Databases/rPascal/features/nDCG/" + path + ".txt") as file:
-        data = file.readlines()
-        for line in data:
-            word = line.split()
-            adict[word[0]] = float(word[1])
-        sdict = OrderedDict(sorted(adict.items(), key = operator.itemgetter(1)))
-    list = []
-    for key in sdict:
-        e = (l[path][key])
-    #    print key, '........', sdict[key], e
-        list.append(e)
-    #    main(list)
-    reallist(list)
+       # convert(r)
 
 #Calculate/Find the most similar pair of each of all queries
 def convert(d):
@@ -133,7 +87,8 @@ def convert(d):
                 query = str(key)
                 min_dist = dist
                 min_y = str(element).rstrip(".jpg")
-        print "Processing query: " + (query) + " <=> Most similar image is: " + (min_y) + " <=> Distance is: " + str(min_dist)
+        print "Processing query: " + query + " <=> Most similar image is: " + (
+            min_y) + " <=> Distance is: " + str(min_dist)
         dict[query] = min_y
         dict2[query] = str(min_dist)
     # print dict
@@ -165,6 +120,8 @@ def savedist(self):
         file.write("\n")
     file.close()
     print "Saved.."
+
+
      #   print "min_dist_of_key: " + query + " <> " + min_y + " => dist: " + str(min_dist)
     # for e1 in k.keys():
     #     min_dist = 10000
@@ -200,7 +157,7 @@ def dist_cal(path1, path2):
 def visualize_dataset(dset):
     fig = plt.figure()
     plt.axis("off")
-    plt.tight_layout()
+  #  plt.tight_layout()
 
     key = dset.queries.keys()[np.random.randint(50)]
     dset.queries[key].load_to_figure(fig.add_subplot(1, 5, 1), "query")
@@ -212,30 +169,10 @@ def visualize_dataset(dset):
     plt.show()
     plt.savefig("good.png")
 
-#List creation for nDCG calculation, printing also
-def reallist(list):
-    real = list
-    gt = sorted(real, reverse=True)
-    k = len(real)
-    print "nDCG value is", dcg(real, k=k) / dcg(gt, k=k)
-
-#nDCG calculation method
-def dcg(rank_list, k=None):
-    if k is None:
-        k = len(rank_list)
-    sum = 0
-    for i, rank in enumerate(rank_list):
-        if k <= i:
-            break
-        # there is something wrong with nDCG in the paper
-        # https://crowdsolving.jp/node/1435
-        sum += (math.pow(2, rank) - 1) / math.log(i + 2, 2)
-    return sum
-
 def main():
     dset = Dataset(RPASCAL_DIR)
     # Dataset dset = Dataset.getInstance(RPASCAL_DIR)
-    # visualize_dataset(dset)
+    visualize_dataset(dset)
     # dset = Dataset.__new__(cls, ****)
     # dset.__init__(RPASCAL_DIR)
     #  for key, values in dset.annotations.items():
