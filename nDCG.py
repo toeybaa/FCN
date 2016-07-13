@@ -234,7 +234,7 @@ def reallist(list, path):
     gt = sorted(real, reverse=True)
     k = len(real)
  #   each = "nDCG value of",path,"is", dcg(real, k=10) / dcg(gt, k=10)
-    value = dcg(real, k=k) / dcg(gt, k=k)
+    value = dcg(real, k=20) / dcg(gt, k=20)
     return value
 
 #nDCG calculation method

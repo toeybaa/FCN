@@ -70,7 +70,7 @@ class Dataset(object):
             assert len(correspondence) == ann_lables[i][0].shape[0]
             for j in range(len(correspondence)):
                 self.annotations[name][correspondence[j].rstrip(IM_EXT)] = ann_lables[i][0][j][0]
-       # convert(r)
+        convert(r)
 
 #Calculate/Find the most similar pair of each of all queries
 def convert(d):
@@ -141,16 +141,26 @@ def savedist(self):
     #             # print count
 
 # Distance calculation method, return distance in float datatype
+def dist_365cal(path1, path2):
+    path1 = '/home/peth/places365/feature/query_np/' + path1 + '.npy'
+    path2 = '/home/peth/places365/feature/reference_np/' + path2 + '.npy'
+    c1 = np.load(path1)
+    c2 = np.load(path2)
+    dist365 = np.linalg.norm(c1 - c2)
+    return dist365
+
 def dist_cal(path1, path2):
     path2 = path2.rstrip(".jpg")
+    d365 = dist_365cal(path1, path2)
     path1 = "/home/peth/Databases/rPascal/features/caffe/queries/" + path1 + ".npy"
     path2 = "/home/peth/Databases/rPascal/features/caffe/references/" + path2 + ".npy"
     c1 = np.load(path1)
     c2 = np.load(path2)
     dist = np.linalg.norm(c1 - c2)
+    fdist = dist + d365
     # # print dist
     #    print (str("Distance is ") + str (dist))
-    return dist
+    return fdist
     # # print (str("d2: ")+ str(dist2)) # the same value
 
 #Draw the example of 4 images in the format of query and label (0, 1, 2, 3)
@@ -172,7 +182,7 @@ def visualize_dataset(dset):
 def main():
     dset = Dataset(RPASCAL_DIR)
     # Dataset dset = Dataset.getInstance(RPASCAL_DIR)
-    visualize_dataset(dset)
+ #   visualize_dataset(dset)
     # dset = Dataset.__new__(cls, ****)
     # dset.__init__(RPASCAL_DIR)
     #  for key, values in dset.annotations.items():
