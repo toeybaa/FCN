@@ -157,7 +157,7 @@ def dist_cal(path1, path2):
     c1 = np.load(path1)
     c2 = np.load(path2)
     dist = np.linalg.norm(c1 - c2)
-    fdist = dist + d365
+    fdist = (0.2*dist) + (0.8*d365)
     # # print dist
     #    print (str("Distance is ") + str (dist))
     return fdist

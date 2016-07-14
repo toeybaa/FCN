@@ -6,6 +6,8 @@ import scipy.io as sio
 import math
 import operator
 from collections import defaultdict, OrderedDict
+from dataset import dist_cal
+import glob
 
 RPASCAL_DIR = "/home/peth/Databases/rPascal"
 # RIMAGENET_DIR = "/home/peth/Databases/rImageNet"
@@ -80,25 +82,28 @@ def anconvert(d, l, inpath):
     path = '/home/peth/Databases/rPascal/features/caffe/queries/'
     finput = inpath + '.npy'
     check = True
-
-    for fname in sorted(os.listdir(path)):
-        if finput == fname and check:
-            check = False
-            file = open("/home/peth/Databases/rPascal/features/nDCG/" + inpath + ".txt", 'w')
-            for key in d:
-                # print key
-                if inpath == key:
-                    value = d[key]
-                    for element in value:
-                        dist = str(dist_cal(key, element))
-                        ref = str(element).rstrip(".jpg")
-                        file.write(ref)
-                        file.write(" ")
-                        file.write(dist)
-                        file.write("\n")
-            file.close()
-            print 'All reference and distance of ' + str(inpath) + " is written"
-    return tosort(inpath, l)
+    isfile = glob.glob("/home/peth/Databases/rPascal/features/nDCG/*.txt")
+    if len(isfile) == 50:
+        check = False
+        return tosort(inpath, l)
+    if check:
+        for fname in sorted(os.listdir(path)):
+            if finput == fname:
+                file = open("/home/peth/Databases/rPascal/features/nDCG/" + inpath + ".txt", 'w')
+                for key in d:
+                    # print key
+                    if inpath == key:
+                        value = d[key]
+                        for element in value:
+                            dist = str(dist_cal(key, element))
+                            ref = str(element).rstrip(".jpg")
+                            file.write(ref)
+                            file.write(" ")
+                            file.write(dist)
+                            file.write("\n")
+                file.close()
+                print 'All reference and distance of ' + str(inpath) + " is written"
+        return tosort(inpath, l)
 
 
 # Sort the distance (in ascending order) based on the previous input by the user
@@ -188,19 +193,6 @@ def savedist(self):
     #
     #             # print count
 
-# Distance calculation method, return distance in float datatype
-def dist_cal(path1, path2):
-    path2 = path2.rstrip(".jpg")
-    path1 = "/home/peth/Databases/rPascal/features/caffe/queries/" + path1 + ".npy"
-    path2 = "/home/peth/Databases/rPascal/features/caffe/references/" + path2 + ".npy"
-    c1 = np.load(path1)
-    c2 = np.load(path2)
-    dist = np.linalg.norm(c1 - c2)
-    # # print dist
-    #    print (str("Distance is ") + str (dist))
-    return dist
-    # # print (str("d2: ")+ str(dist2)) # the same value
-
 #Draw the example of 4 images in the format of query and label (0, 1, 2, 3)
 def visualize_dataset(dset):
     fig = plt.figure()
@@ -232,9 +224,9 @@ def reallist(list, path):
 #    print real
 #    print len(real)
     gt = sorted(real, reverse=True)
-    k = len(real)
+    # k = len(real)
  #   each = "nDCG value of",path,"is", dcg(real, k=10) / dcg(gt, k=10)
-    value = dcg(real, k=20) / dcg(gt, k=20)
+    value = dcg(real, k=30) / dcg(gt, k=30)
     return value
 
 #nDCG calculation method
