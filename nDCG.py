@@ -82,11 +82,12 @@ def anconvert(d, l, inpath):
     path = '/home/peth/Databases/rPascal/features/caffe/queries/'
     finput = inpath + '.npy'
     check = True
-    isfile = glob.glob("/home/peth/Databases/rPascal/features/nDCG/*.txt")
-    if len(isfile) == 50:
+    isfileaf = glob.glob("/home/peth/Databases/rPascal/features/nDCG/*.txt")
+    isfilebf = glob.glob('/home/peth/Databases/rPascal/features/caffe/queries/*.npy')
+    if len(isfileaf) == len(isfilebf):
         check = False
         return tosort(inpath, l)
-    if check:
+    if check and len(isfileaf) < len(isfilebf):
         for fname in sorted(os.listdir(path)):
             if finput == fname:
                 file = open("/home/peth/Databases/rPascal/features/nDCG/" + inpath + ".txt", 'w')
@@ -224,9 +225,9 @@ def reallist(list, path):
 #    print real
 #    print len(real)
     gt = sorted(real, reverse=True)
-    # k = len(real)
+    k = len(real)
  #   each = "nDCG value of",path,"is", dcg(real, k=10) / dcg(gt, k=10)
-    value = dcg(real, k=30) / dcg(gt, k=30)
+    value = dcg(real, k=k) / dcg(gt, k=k)
     return value
 
 #nDCG calculation method
