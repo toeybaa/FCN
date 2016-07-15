@@ -141,7 +141,16 @@ def savedist(self):
     #             # print count
 
 # Distance calculation method, return distance in float datatype
+def dist_attcal(path1, path2):
+    path1 = '/home/peth/Databases/rPascal/features/attribute_data/queries/' + path1 + '.npy'
+    path2 = '/home/peth/Databases/rPascal/features/attribute_data/references/' + path2 + '.npy'
+    c1 = np.load(path1)
+    c2 = np.load(path2)
+    distatt = np.linalg.norm(c1 - c2)
+    return distatt
+
 def dist_365cal(path1, path2):
+    #dist_attcal(path1, path2)
     path1 = '/home/peth/places365/feature/query_np/' + path1 + '.npy'
     path2 = '/home/peth/places365/feature/reference_np/' + path2 + '.npy'
     c1 = np.load(path1)
@@ -152,12 +161,13 @@ def dist_365cal(path1, path2):
 def dist_cal(path1, path2):
     path2 = path2.rstrip(".jpg")
     d365 = dist_365cal(path1, path2)
+    datt = dist_attcal(path1, path2)
     path1 = "/home/peth/Databases/rPascal/features/caffe/queries/" + path1 + ".npy"
     path2 = "/home/peth/Databases/rPascal/features/caffe/references/" + path2 + ".npy"
     c1 = np.load(path1)
     c2 = np.load(path2)
     dist = np.linalg.norm(c1 - c2)
-    fdist = (0.2*dist) + (0.8*d365)
+    fdist = (0.2*dist) + (0.3*d365) + (0.5*datt)
     # # print dist
     #    print (str("Distance is ") + str (dist))
     return fdist
